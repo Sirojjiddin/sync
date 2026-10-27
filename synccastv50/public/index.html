@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e1a">
+<title>SyncCast</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="aurora"></div>
+
+<header class="top">
+  <div class="logo"><span class="logo-mark">◉</span> SyncCast</div>
+  <div class="top-r">
+    <span id="liveChip" class="chip live" hidden>🔴 Efirda</span>
+    <div class="netwrap">
+      <button id="netBox" class="netbox" data-q="0" hidden><span class="bars"><i></i><i></i><i></i><i></i></span><span id="netTxt">—</span></button>
+      <div id="netPanel" class="netpanel" hidden></div>
+    </div>
+    <button id="fnBtn" class="fn-btn" hidden>☰ Funksiyalar <span id="fnBadge" class="badge">0</span></button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ BOSH SAHIFA ============ -->
+  <section id="home" class="view">
+    <div class="hero">
+      <h1>Hamma qurilmada <span class="grad">bir vaqtda</span></h1>
+      <p class="sub">Bitta qurilmadan musiqa, film yoki ekranni uzating — qolganlari kod orqali kirib, o'z dinamigidan bir xil balandlikda, sinxron eshitadi.</p>
+    </div>
+    <div class="cards">
+      <button class="big" id="goHost">
+        <span class="ico">📡</span><b>Transmitter</b>
+        <small>Xona yarating, fayl yuklang, ovoz va ekranni hammaga uzating</small>
+      </button>
+      <button class="big alt" id="goRecv">
+        <span class="ico">📱</span><b>Receiver</b>
+        <small>Kod bilan kiring va eshiting / ko'ring</small>
+      </button>
+    </div>
+    <button id="resume" class="link" hidden></button>
+    <p id="homeErr" class="err" hidden></p>
+  </section>
+
+  <!-- ============ RECEIVER: KIRISH ============ -->
+  <section id="join" class="view" hidden>
+    <button class="back" data-back>← Orqaga</button>
+    <h1>Xonaga kirish</h1>
+    <div class="card">
+      <label>Xona kodi</label>
+      <input id="codeIn" class="code-in" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="off">
+      <label>Ismingiz (ixtiyoriy)</label>
+      <input id="nameIn" maxlength="24" placeholder="Masalan: Ali" autocomplete="off">
+      <button id="joinBtn" class="primary">Qo'shilish</button>
+      <p id="joinErr" class="err" hidden></p>
+    </div>
+  </section>
+
+  <!-- ============ TRANSMITTER ============ -->
+  <section id="host" class="view" hidden>
+    <div class="card room">
+      <div class="room-code">
+        <small>Xona kodi</small>
+        <div id="hCode" class="code">------</div>
+        <div class="members">👥 <b id="hTotal">0</b> receiver · tayyor <b id="hReady">0</b></div>
+      </div>
+      <div class="room-qr"><img id="qr" alt="QR kod" width="120" height="120"></div>
+      <div class="room-link">
+        <input id="joinUrl" readonly>
+        <button id="copyUrl" class="sec">Nusxa</button>
+      </div>
+      <p id="lanHint" class="muted" hidden></p>
+    </div>
+
+    <div class="card">
+      <div class="np"><span class="eq"><i></i><i></i><i></i><i></i></span><span id="hNow">Fayl tanlanmagan</span><span id="hGain" class="chip mini" hidden></span></div>
+      <div id="hSlot" class="slot"></div>
+      <div id="mediaCtl">
+        <div class="seek-row">
+          <span id="hCur">0:00</span>
+          <input id="hSeek" type="range" min="0" max="1000" value="0">
+          <span id="hDur">0:00</span>
+        </div>
+        <div class="controls">
+          <button id="prevBtn" class="sec ic" title="Oldingi">⏮</button>
+          <button id="back10" class="sec ic" title="10 soniya orqaga">⏪</button>
+          <button id="playPause" class="primary round">▶</button>
+          <button id="fwd10" class="sec ic" title="10 soniya oldinga">⏩</button>
+          <button id="nextBtn" class="sec ic" title="Keyingi">⏭</button>
+        </div>
+        <div class="btn-row"><button id="stopBtn" class="sec">⏹ To'xtatish</button></div>
+        <label class="sw"><span>🔈 Bu qurilmadan ham chalinsin</span><input type="checkbox" class="tg" id="localOn" checked></label>
+      </div>
+      <label class="sw"><span>⏭ Ketma-ket o'tish</span><input type="checkbox" class="tg" id="autoNext" checked></label>
+    </div>
+
+    <div class="card">
+      <h2>📁 Fayllar</h2>
+      <label id="drop" class="drop">
+        <input id="fileIn" type="file" multiple hidden>
+        <b>＋ Fayl tanlang</b> <span>yoki bu yerga tashlang</span>
+        <small id="maxHint">musiqa, video, rasm, PDF, Word, Excel, PowerPoint, matn</small>
+      </label>
+      <div id="uploads"></div>
+      <div class="url-row">
+        <input id="urlIn" placeholder="YouTube havolasi yoki to'g'ridan-to'g'ri fayl havolasi">
+        <button id="urlBtn" class="sec">Qo'shish</button>
+      </div>
+      <ul id="list" class="list"></ul>
+      <p id="emptyHint" class="muted">Hozircha fayl yo'q. Birinchi faylni yuklang.</p>
+    </div>
+
+    <div class="foot">
+      <button id="hostLeave" class="link">Chiqish (xona ochiq qoladi)</button>
+      <button id="hostClose" class="link danger">Xonani yopish</button>
+    </div>
+  </section>
+
+  <!-- ============ RECEIVER ============ -->
+  <section id="recv" class="view" hidden>
+    <div class="card">
+      <div class="r-head">
+        <div><small class="muted">Xona</small> <b id="rCode" class="code sm">------</b></div>
+        <div class="muted">👥 <b id="rTotal">0</b></div>
+      </div>
+      <div class="np"><span class="eq"><i></i><i></i><i></i><i></i></span><span id="rNow">Transmitter fayl tanlashini kuting…</span></div>
+      <div id="rSlot" class="slot"></div>
+      <div class="r-status">
+        <span id="rChip" class="chip">—</span>
+        <span id="rLive" class="chip ok" hidden></span>
+        <span id="rMute" class="chip bad" hidden>🔇 Dinamik o'chirilgan</span>
+      </div>
+      <div class="vol"><span>🔈</span><input id="vol" type="range" min="0" max="100" value="100"><span>🔊</span></div>
+      <p id="volNote" class="muted center" hidden>🔒 Ovozni Transmitter hamma uchun bir xil qilib boshqaradi.</p>
+      <details class="mini-acc">
+        <summary>⏱ Sinxronni qo'lda sozlash (Bluetooth uchun)</summary>
+        <div class="vol"><span>−</span><input id="syncAdj" type="range" min="-500" max="500" step="10" value="0"><span>+</span></div>
+        <p class="muted center"><b id="syncVal">0 ms</b> — ovoz kech bo'lsa musbat, erta bo'lsa manfiy qiymat bering</p>
+      </details>
+    </div>
+    <div class="foot"><button id="recvLeave" class="link">Chiqish</button></div>
+  </section>
+
+</main>
+
+<!-- Yagona pleyer: har bir rolga tegishli joyga ko'chiriladi -->
+<div id="stage" class="stage" data-kind="none">
+  <video id="player" class="pl" playsinline webkit-playsinline preload="auto"></video>
+  <video id="playerExt" class="pl" playsinline webkit-playsinline preload="auto" hidden></video>
+  <video id="castVideo" muted playsinline autoplay></video>
+  <div id="ytWrap"><div id="ytPlayer"></div></div>
+  <img id="pic" alt="">
+  <iframe id="docFrame" title="Hujjat"></iframe>
+  <div id="docCard" class="doccard">
+    <div id="docIco" class="doc-ico">📄</div>
+    <div id="docName" class="doc-name"></div>
+    <div id="docMeta" class="muted"></div>
+  </div>
+  <div id="cover" class="cover">🎵</div>
+  <div id="fileBar" class="filebar" hidden>
+    <a id="openLink" target="_blank" rel="noopener">Ochish</a>
+    <a id="dlLink" download>⬇ Yuklab olish</a>
+  </div>
+  <div class="castbar">
+    <button id="bigBtn" title="Kattalashtirish / Kichiklashtirish">🔍</button>
+    <button id="fitBtn" title="Sig'dirish / To'ldirish">⤢</button>
+    <button id="fsBtn" title="To'liq ekran">⛶</button>
+  </div>
+  <button id="fsExit" class="fsexit">✕ Chiqish</button>
+  <button id="tap" class="tap" hidden>▶ Eshitish uchun bosing</button>
+</div>
+
+<!-- ============ FUNKSIYALAR MENYUSI (Transmitter) ============ -->
+<div id="scrim" class="scrim" hidden></div>
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <b>☰ Funksiyalar</b>
+    <button id="drawerClose" class="x">✕</button>
+  </div>
+  <div class="drawer-body">
+
+    <details class="acc" open>
+      <summary><span>🎙</span> Jonli efir</summary>
+      <div class="acc-body">
+        <div class="btn-row">
+          <button id="micBtn" class="sec">🎤 Mikrofonni yoqish</button>
+          <button id="screenBtn" class="sec">🖥 Ekranni ko'rsatish</button>
+        </div>
+        <div id="micBox" hidden>
+          <label>Mikrofon ovozi</label>
+          <div class="vol"><span>🔈</span><input id="micGain" type="range" min="0" max="200" value="100"><span>🔊</span></div>
+          <progress id="micMeter" max="1" value="0"></progress>
+          <span id="micState" class="chip mini">⚪ Jim</span>
+        </div>
+        <p class="muted tip">🎧 Aks-sado va chiyillashdan saqlanish uchun quloqchin taqing. Dastur shovqin/aks-sadoni avtomatik kesadi va chiyillashni aniqlab bostiradi.</p>
+        <label>Ekran sifati rejimi</label>
+        <select id="castMode">
+          <option value="detail">📄 Matn, slayd, kod (maksimal aniqlik)</option>
+          <option value="motion">🎬 Video, o'yin (silliq harakat)</option>
+        </select>
+        <label class="sw"><span>🔊 Ekran bilan brauzer/tizim ovozi</span><input type="checkbox" class="tg" id="castAudio"></label>
+        <video id="castPrev" muted playsinline autoplay hidden></video>
+        <p id="liveHint" class="muted warn-t" hidden></p>
+      </div>
+    </details>
+
+    <details class="acc" open>
+      <summary><span>🔊</span> Ovoz</summary>
+      <div class="acc-body">
+        <button id="muteAllBtn" class="sec wide">🔇 Hammaning dinamigini o'chirish</button>
+        <label>Umumiy ovoz (hamma qurilmada bir xil): <b id="volVal">100%</b></label>
+        <input id="cfgVol" type="range" min="0" max="100" value="100">
+        <label class="sw"><span>🎚 Ovozni tenglashtirish (LUFS −16)</span><input type="checkbox" class="tg" id="cfgNorm" checked></label>
+        <label class="sw"><span>🔒 Receiver ovozni o'zgartira olmasin</span><input type="checkbox" class="tg" id="cfgLockVol" checked></label>
+        <label class="sw"><span>🎤 Mikrofon paytida receiverda musiqa pasaysin</span><input type="checkbox" class="tg" id="cfgDuck" checked></label>
+        <label class="sw"><span>🔈 Mikrofon paytida bu qurilma dinamigi pasaysin</span><input type="checkbox" class="tg" id="localDuck" checked></label>
+        <label>Takrorlash</label>
+        <select id="cfgLoop"><option value="off">O'chiq</option><option value="one">Bitta faylni</option><option value="all">Hammasini</option></select>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span>⏱</span> Sinxron va tarmoq</summary>
+      <div class="acc-body">
+        <label class="sw"><span>⏳ Play'da hamma tayyor bo'lguncha kutish</span><input type="checkbox" class="tg" id="cfgWait" checked></label>
+        <label>Bu qurilma sinxron tuzatmasi: <b id="syncValH">0 ms</b></label>
+        <input id="syncAdjH" type="range" min="-500" max="500" step="10" value="0">
+        <p class="muted tip">Bluetooth dinamik/quloqchin ovozni kechiktirsa, shu yerda musbat qiymat bering. Receiverlar uchun ham o'zida shunday sozlama bor. Har bir receiverning ping va sinxron farqi "Receiverlar" bo'limida ko'rinadi.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span>🔐</span> Ruxsatlar</summary>
+      <div class="acc-body">
+        <label class="sw"><span>👁 Receiverlar fayllarni ko'ra olsin</span><input type="checkbox" class="tg" id="cfgView" checked></label>
+        <label class="sw"><span>⬇ Receiverlar yuklab ola olsin</span><input type="checkbox" class="tg" id="cfgDl" checked></label>
+        <label class="sw"><span>🚪 Yangi receiverlar kira olmasin</span><input type="checkbox" class="tg" id="cfgLocked"></label>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span>👥</span> Receiverlar</summary>
+      <div class="acc-body">
+        <ul id="recvList" class="list rlist"></ul>
+        <p id="recvEmpty" class="muted">Hozircha hech kim kirmagan.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span>📢</span> Xabar yuborish</summary>
+      <div class="acc-body">
+        <div class="url-row"><input id="annIn" maxlength="200" placeholder="Masalan: 5 daqiqadan keyin boshlaymiz"><button id="annBtn" class="sec">Yuborish</button></div>
+      </div>
+    </details>
+
+  </div>
+</aside>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

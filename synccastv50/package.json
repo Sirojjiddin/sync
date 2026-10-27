@@ -1,0 +1,17 @@
+{
+  "name": "synccast",
+  "version": "3.0.0",
+  "description": "Xona kodi bilan bir nechta qurilmada sinxron audio/video chalish (Transmitter / Receiver)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4",
+    "ws": "^8.17.0"
+  }
+}
